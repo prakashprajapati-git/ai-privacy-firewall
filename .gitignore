@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build outputs & Packed Extension Secrets
+dist/
+dist-ssr/
+*.local
+*.crx
+*.pem
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & IDE
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvsproject
+*.njsproj
+*.sln
+*.sw?
+
+# Environment & Temp
+.env
+.env.*
+!.env.example
+.cache/
+.temp/
