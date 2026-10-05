@@ -77,7 +77,7 @@ export const REGEX_PATTERNS: PatternDefinition[] = [
   {
     type: "CREDIT_CARD",
     category: "FINANCIAL",
-    regex: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b/g,
+    regex: /\b(?:4[0-9]{3}(?:[ -]?[0-9]{4}){3}|5[1-5][0-9]{2}(?:[ -]?[0-9]{4}){3}|3[47][0-9]{2}[ -]?[0-9]{6}[ -]?[0-9]{5}|6(?:011|5[0-9]{2})[ -]?[0-9]{4}[ -]?[0-9]{4}[ -]?[0-9]{4})\b/g,
     severity: "critical",
     confidence: 0.95,
     validator: validateLuhn,
