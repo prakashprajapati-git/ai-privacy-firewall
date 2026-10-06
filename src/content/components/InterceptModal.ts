@@ -47,7 +47,7 @@ export function createShadowInterceptModal(
   const findingsListHtml = findings
     .map(
       (f) => `
-      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; transition: transform 0.2s ease, border-color 0.2s ease;">
         <span style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #0f172a; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;">
           ${itemDotSvg} ${f.type} (${f.category})
         </span>
@@ -59,38 +59,65 @@ export function createShadowInterceptModal(
 
   shadow.innerHTML = `
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleUp {
+        from {
+          opacity: 0;
+          transform: scale(0.92) translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
 
       .backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(8px);
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
+
       .modal {
         position: relative;
         width: 100%;
-        max-width: 540px;
+        max-width: 550px;
         background: #ffffff;
-        border: 1px solid #bae6fd;
-        border-radius: 20px;
-        box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.25);
+        border: 1px solid rgba(186, 230, 253, 0.8);
+        border-radius: 22px;
+        box-shadow: 0 25px 60px -12px rgba(2, 132, 199, 0.25), 0 0 0 1px rgba(2, 132, 199, 0.08), 0 30px 60px rgba(0, 0, 0, 0.16);
         padding: 28px;
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: #0f172a;
         box-sizing: border-box;
+        animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
+
       .header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 16px;
       }
+
       .title-group {
         display: flex;
         align-items: center;
         gap: 10px;
       }
+
       .badge {
         font-size: 12px;
         font-weight: 800;
@@ -99,7 +126,9 @@ export function createShadowInterceptModal(
         background: ${badgeBg};
         color: ${badgeColor};
         border: 1px solid ${badgeBorder};
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
       }
+
       .title {
         font-size: 18px;
         font-weight: 800;
@@ -107,6 +136,7 @@ export function createShadowInterceptModal(
         margin: 0;
         letter-spacing: -0.02em;
       }
+
       .risk-bar-bg {
         height: 6px;
         background: #f1f5f9;
@@ -114,16 +144,18 @@ export function createShadowInterceptModal(
         overflow: hidden;
         margin: 14px 0 16px 0;
       }
+
       .risk-bar-fill {
         height: 100%;
         width: ${riskScore}%;
         background: ${badgeColor};
-        transition: width 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
       .findings-container {
         max-height: 160px;
         overflow-y: auto;
-        margin: 14px 0 18px 0;
+        margin: 14px 0 16px 0;
         padding-right: 4px;
       }
 
@@ -148,14 +180,54 @@ export function createShadowInterceptModal(
         background: #0284c7;
       }
 
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+
       .preview-title {
         font-size: 11px;
         font-weight: 800;
         color: #0284c7;
-        margin-bottom: 6px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
+
+      .btn-copy {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #ffffff;
+        border: 1px solid #bae6fd;
+        color: #0284c7;
+        padding: 4px 10px;
+        border-radius: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      .btn-copy:hover {
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+        color: #0369a1;
+        transform: translateY(-1px);
+      }
+
+      .btn-copy:active {
+        transform: scale(0.96);
+      }
+
+      .btn-copy.copied {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #059669;
+      }
+
       .preview-box {
         background: #f0f9ff;
         border: 1px solid #bae6fd;
@@ -166,47 +238,105 @@ export function createShadowInterceptModal(
         color: #0369a1;
         max-height: 95px;
         overflow-y: auto;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         white-space: pre-wrap;
+        line-height: 1.5;
       }
+
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .keyboard-hints {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .kbd-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .kbd-badge kbd {
+        display: inline-block;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        line-height: 1.1;
+        color: #334155;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-bottom-width: 2px;
+        border-radius: 4px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+      }
+
       .actions {
         display: flex;
         gap: 10px;
-        justify-content: flex-end;
+        align-items: center;
       }
+
       .btn {
-        padding: 11px 20px;
+        padding: 10px 18px;
         border-radius: 10px;
         font-size: 13px;
         font-weight: 700;
         cursor: pointer;
         border: none;
-        transition: all 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
+
+      .btn:active {
+        transform: scale(0.97);
+      }
+
       .btn-primary {
-        background: #0284c7;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
         color: #ffffff;
-        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
       }
+
       .btn-primary:hover {
-        background: #0369a1;
+        background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
       }
+
       .btn-secondary {
         background: #f1f5f9;
         color: #475569;
         border: 1px solid #cbd5e1;
       }
+
       .btn-secondary:hover {
         background: #e2e8f0;
+        color: #1e293b;
       }
+
       .btn-danger {
         background: #fef2f2;
         color: #ef4444;
         border: 1px solid #fecaca;
       }
+
       .btn-danger:hover {
         background: #fee2e2;
+        color: #dc2626;
       }
     </style>
 
@@ -236,17 +366,32 @@ export function createShadowInterceptModal(
         ${findingsListHtml}
       </div>
 
-      <div class="preview-title">Sanitized Safe Prompt Preview</div>
+      <div class="preview-header">
+        <span class="preview-title">Sanitized Safe Prompt Preview</span>
+        <button id="btn-copy-safe" class="btn-copy" type="button" title="Copy Sanitized Prompt">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copy-btn-text">Copy Safe Prompt</span>
+        </button>
+      </div>
       <div class="preview-box">${safePrompt}</div>
 
-      <div class="actions">
-        <button id="btn-cancel" class="btn btn-secondary">Cancel</button>
-        ${
-          !isBlocked && options.onSendAnyway
-            ? `<button id="btn-send-anyway" class="btn btn-danger">Send Anyway</button>`
-            : ""
-        }
-        <button id="btn-protect" class="btn btn-primary">Protect & Send</button>
+      <div class="footer-row">
+        <div class="keyboard-hints">
+          <span class="kbd-badge"><kbd>Esc</kbd> Cancel</span>
+          <span class="kbd-badge"><kbd>↵ Enter</kbd> Protect</span>
+        </div>
+        <div class="actions">
+          <button id="btn-cancel" class="btn btn-secondary">Cancel</button>
+          ${
+            !isBlocked && options.onSendAnyway
+              ? `<button id="btn-send-anyway" class="btn btn-danger">Send Anyway</button>`
+              : ""
+          }
+          <button id="btn-protect" class="btn btn-primary">Protect & Send</button>
+        </div>
       </div>
     </div>
   `;
@@ -255,20 +400,53 @@ export function createShadowInterceptModal(
   const btnProtect = shadow.getElementById("btn-protect");
   const btnCancel = shadow.getElementById("btn-cancel");
   const btnSendAnyway = shadow.getElementById("btn-send-anyway");
+  const btnCopySafe = shadow.getElementById("btn-copy-safe");
+  const copyBtnText = shadow.getElementById("copy-btn-text");
+
+  const cleanup = () => {
+    window.removeEventListener("keydown", handleKeyDown);
+    host.remove();
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      cleanup();
+      options.onCancel();
+    } else if (e.key === "Enter" && !e.shiftKey) {
+      cleanup();
+      options.onProtectAndSend();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
 
   btnProtect?.addEventListener("click", () => {
-    host.remove();
+    cleanup();
     options.onProtectAndSend();
   });
 
   btnCancel?.addEventListener("click", () => {
-    host.remove();
+    cleanup();
     options.onCancel();
   });
 
   btnSendAnyway?.addEventListener("click", () => {
-    host.remove();
+    cleanup();
     if (options.onSendAnyway) options.onSendAnyway();
+  });
+
+  btnCopySafe?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(safePrompt);
+      if (copyBtnText) copyBtnText.textContent = "Copied!";
+      btnCopySafe.classList.add("copied");
+      setTimeout(() => {
+        if (copyBtnText) copyBtnText.textContent = "Copy Safe Prompt";
+        btnCopySafe.classList.remove("copied");
+      }, 2000);
+    } catch {
+      // Fallback
+    }
   });
 
   return host;
